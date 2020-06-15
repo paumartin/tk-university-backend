@@ -3,7 +3,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
-from .models import Recipe
+from .models import Recipe, Ingredient
 
 from .serializers import RecipeSerializer, IngredientSerializer
 
@@ -25,3 +25,15 @@ class RecipeViewSet(ModelViewSet):
 
         ingredient_serializer.save(recipe=recipe)
         return Response(ingredient_serializer.data, status=status.HTTP_200_OK)
+
+    @action(methods=['DELETE'], detail=True, url_path=r'ingredients/(?P<ingredient_id>\d+)')
+    def remove_ingredient(self, request, ingredient_id, pk=None):
+        """Removes an ingredient from a recipe"""
+
+        try:
+            ingredient = Ingredient.objects.get(id=ingredient_id)
+            ingredient.delete()
+        except Ingredient.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        return Response(status=status.HTTP_204_NO_CONTENT)

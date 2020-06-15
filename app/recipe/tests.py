@@ -15,6 +15,12 @@ def detail_url(recipe_id):
     """Return the recipe detail URL"""
     return reverse('recipe:recipe-detail', args=[recipe_id])
 
+
+def remove_ingredient_url(recipe_id, ingredient_id):
+    """return the recipe remove ingredient URL"""
+    return reverse('recipe:recipe-remove-ingredient', args=[recipe_id, ingredient_id])
+
+
 def sample_recipe(**params):
     """Creates a sample recipe"""
     defaults = {
@@ -134,3 +140,28 @@ class RecipeApiTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         for key in payload.keys():
             self.assertEqual(payload[key], getattr(ingredient, key))
+
+    def test_remove_ingredient_successfully(self):
+        """Test the remove ingredient endpoint"""
+        recipe = sample_recipe()
+        ingredient = sample_ingredient(recipe=recipe)
+
+        url = remove_ingredient_url(recipe.id, ingredient.id)
+        res = self.client.delete(url)
+
+        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_remove_ingredient_recipe_not_exists(self):
+        """Test removing an ingredient from a non existent recipe"""
+        url = remove_ingredient_url(1, 1)
+        res = self.client.delete(url)
+
+        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_remove_ingredient_not_exists(self):
+        """Test removing a non existent ingredient"""
+        recipe = sample_recipe()
+        url = remove_ingredient_url(recipe.id, 1)
+        res = self.client.delete(url)
+
+        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)

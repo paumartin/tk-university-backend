@@ -8,8 +8,8 @@ class IngredientSerializer(ModelSerializer):
 
     class Meta:
         model = Ingredient
-        fields = ('name',)
-        read_only_fields = fields
+        fields = ('id', 'name',)
+        read_only_fields = ('id',)
 
 
 class RecipeSerializer(ModelSerializer):

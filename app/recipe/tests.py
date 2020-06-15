@@ -15,7 +15,6 @@ def detail_url(recipe_id):
     """Return the recipe detail URL"""
     return reverse('recipe:recipe-detail', args=[recipe_id])
 
-
 def sample_recipe(**params):
     """Creates a sample recipe"""
     defaults = {
@@ -121,3 +120,17 @@ class RecipeApiTests(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(Recipe.objects.count(), 0)
+
+    def test_add_ingredient(self):
+        """Test the add ingredient to a recipe endpoint"""
+        recipe = sample_recipe()
+        payload = {'name': 'Ingredient name'}
+
+        url = reverse('recipe:recipe-add-ingredient', args=[recipe.id])
+        res = self.client.post(url, payload)
+
+        ingredient = Ingredient.objects.get(id=res.data['id'])
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        for key in payload.keys():
+            self.assertEqual(payload[key], getattr(ingredient, key))

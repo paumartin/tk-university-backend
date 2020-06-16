@@ -141,6 +141,17 @@ class RecipeApiTests(TestCase):
         for key in payload.keys():
             self.assertEqual(payload[key], getattr(ingredient, key))
 
+    def test_add_ingredient_twice(self):
+        """Test adding the same ingredient to a recipe return a CONFLICT error"""
+        recipe = sample_recipe()
+        sample_ingredient(name='Ingredient name', recipe=recipe)
+        payload = {'name': 'Ingredient name'}
+
+        url = reverse('recipe:recipe-add-ingredient', args=[recipe.id])
+        res = self.client.post(url, payload)
+
+        self.assertEqual(res.status_code, status.HTTP_409_CONFLICT)
+
     def test_remove_ingredient_successfully(self):
         """Test the remove ingredient endpoint"""
         recipe = sample_recipe()

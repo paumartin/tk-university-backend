@@ -16,5 +16,8 @@ class Ingredient(models.Model):
         related_name='ingredients'
     )
 
+    class Meta:
+        unique_together = ('name', 'recipe')
+
     def __str__(self):
         return self.name

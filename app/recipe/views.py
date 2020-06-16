@@ -1,3 +1,5 @@
+from django.db import IntegrityError
+
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -23,7 +25,11 @@ class RecipeViewSet(ModelViewSet):
         if not ingredient_serializer.is_valid():
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-        ingredient_serializer.save(recipe=recipe)
+        try:
+            ingredient_serializer.save(recipe=recipe)
+        except IntegrityError:
+            return Response(status=status.HTTP_409_CONFLICT)
+
         return Response(ingredient_serializer.data, status=status.HTTP_200_OK)
 
     @action(methods=['DELETE'], detail=True, url_path=r'ingredients/(?P<ingredient_id>\d+)')

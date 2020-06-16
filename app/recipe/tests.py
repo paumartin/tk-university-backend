@@ -72,6 +72,16 @@ class RecipeApiTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, serialized_recipes.data)
 
+    def test_filter_list_recipes(self):
+        """Test the list endpoint with additional filters"""
+        sample_recipe(name='Recipe test 1', description='Recipe test 1 description')
+        sample_recipe(name='Recipe matching name', description='Recipe test 2 description')
+
+        res = self.client.get(RECIPES_URL, {'name': 'matching'})
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data), 1)
+
     def test_create_recipe(self):
         """Test the create recipe endpoint"""
         payload = {

@@ -16,6 +16,15 @@ class RecipeViewSet(ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
 
+    def get_queryset(self):
+        name = self.request.query_params.get('name')
+        queryset = self.queryset
+
+        if name:
+            queryset = queryset.filter(name__contains=name)
+
+        return queryset
+
     @action(methods=['POST'], detail=True, url_path='ingredients')
     def add_ingredient(self, request, pk=None):
         """Adds an ingredient to a recipe"""
